@@ -10,6 +10,7 @@ SOURCE_FILES_DIR      = os.path.join(BASE_DIR, "Source_files")
 LOGO_DIR              = os.path.join(BASE_DIR, "App data", "logos")
 LOGS_FILE             = os.path.join(BASE_DIR, "Logs", "visited_links.csv")
 MISSING_LINKS_CSV     = os.path.join(BASE_DIR, "Logs", "missing_links.csv")
+MISSING_APK_LINKS_CSV = os.path.join(BASE_DIR, "Logs", "missing_apk_links.csv")
 VERIFICATION_LOG_FILE = os.path.join(BASE_DIR, "Logs", "human_verification_urls.csv")
 
 # -- Chromium settings --------------------------------------------------------

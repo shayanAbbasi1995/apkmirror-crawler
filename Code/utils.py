@@ -12,6 +12,7 @@ from ad_handler import handle_fullscreen_ads
 from config import (
     LOGS_FILE,
     MAX_VERIFICATION_ATTEMPTS,
+    MISSING_APK_LINKS_CSV,
     MISSING_LINKS_CSV,
     OUTPUT_CSV,
     SOURCE_FILES_DIR,
@@ -187,7 +188,7 @@ def check_for_dmca_removal(driver, app_link):
     return True
 
 
-def log_missing_apk_link(driver, app_link, logs_folder="Logs"):
+def log_missing_apk_link(driver, app_link):
     """Return True and log *app_link* if the current page is a 404 error page."""
     if driver is None:
         return False
@@ -197,9 +198,8 @@ def log_missing_apk_link(driver, app_link, logs_folder="Logs"):
     if not (error_div and error_div.find("h1", string="404")):
         return False
 
-    os.makedirs(logs_folder, exist_ok=True)
-    log_file = os.path.join(logs_folder, "missing_apk_links.csv")
-    with open(log_file, "a", newline="", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(MISSING_APK_LINKS_CSV), exist_ok=True)
+    with open(MISSING_APK_LINKS_CSV, "a", newline="", encoding="utf-8") as f:
         csv.writer(f).writerow([app_link])
     print(f"Logged missing APK link: {app_link}")
     return True
@@ -218,7 +218,7 @@ def clean_app_data():
         try:
             with open(LOGS_FILE, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-            kept = [l for l in lines if l.split(",")[0].strip() not in urls_to_remove]
+            kept = [line for line in lines if line.split(",")[0].strip() not in urls_to_remove]
             with open(LOGS_FILE, "w", encoding="utf-8") as f:
                 f.writelines(kept)
             print(f"Removed {len(lines) - len(kept)} entries from visited log.")
