@@ -1,0 +1,32 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Data outputs
+App data/
+Source_files/
+Input/
+Logs/
+Code/Logs/missing_apk_links.csv
+
+# Zip archives
+*.zip
+
+# Browser drivers
+drivers/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db

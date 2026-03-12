@@ -1,0 +1,30 @@
+# Web Automation & Parsing
+selenium
+beautifulsoup4
+unidecode
+
+# System & Process Management
+psutil
+subprocess-runner  # For subprocess management
+socket
+
+# URL Handling
+requests
+urllib3  # For `urllib.parse`
+lxml  # Optional, for faster HTML parsing with BeautifulSoup
+
+# Data Handling
+pandas
+numpy  # Some CSV operations may need this
+sqlite3  # Built-in, but some environments may need `pysqlite3`
+
+# Tor & Network Handling
+stem  # For controlling Tor
+fake_useragent  # If you plan to rotate user agents
+
+# Logging & Time Management
+loguru  # Better logging (alternative to built-in `logging`)
+python-dateutil  # For handling `datetime`
+
+# Chrome Driver Management
+webdriver-manager  # Manages ChromeDriver automatically
