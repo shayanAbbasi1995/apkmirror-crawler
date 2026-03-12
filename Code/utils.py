@@ -6,7 +6,6 @@ from urllib.parse import unquote, urlparse
 
 from bs4 import BeautifulSoup
 import pandas as pd
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 from ad_handler import handle_fullscreen_ads
@@ -19,7 +18,6 @@ from config import (
     VERIFICATION_LOG_FILE,
 )
 from connect import connect_to_existing_browser, restart_browser, start_chromium
-from tor_handler import renew_tor_ip
 
 
 def ensure_directories_exist():
@@ -145,8 +143,8 @@ def handle_human_verification(driver, current_url):
     return None
 
 
-def handle_verification_and_rotate(driver, app_link, connection, visited_links):
-    """Run verification handling and rotate the Tor proxy if verification persists.
+def handle_verification_and_rotate(driver, app_link, visited_links):
+    """Run verification handling, reconnecting the browser if verification persists.
 
     Returns the (possibly new) driver, or None if the link should be skipped.
     """
@@ -155,12 +153,7 @@ def handle_verification_and_rotate(driver, app_link, connection, visited_links):
         if new_driver:
             return new_driver
 
-        print(f"Attempt {attempt + 1}/{MAX_VERIFICATION_ATTEMPTS} – rotating proxy...")
-        if "control_port" in connection:
-            renew_tor_ip(connection["control_port"])
-        else:
-            print("Skipping Tor IP renewal – no control_port for this connection.")
-
+        print(f"Attempt {attempt + 1}/{MAX_VERIFICATION_ATTEMPTS} – reconnecting browser...")
         driver.quit()
         start_chromium()
         driver = connect_to_existing_browser()

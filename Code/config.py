@@ -28,21 +28,3 @@ MAX_VERIFICATION_ATTEMPTS = 1
 # -- Modal IDs ----------------------------------------------------------------
 PERMISSIONS_MODAL_ID = "apkPermissions"
 LANGUAGES_MODAL_ID   = "languages"
-
-# -- Tor configuration --------------------------------------------------------
-# Update TOR_PATH to match your local Tor Expert Bundle installation.
-TOR_PATH = r"C:\Users\Shay\Desktop\Tor Expert\tor\tor.exe"
-TOR_DIR  = os.path.dirname(TOR_PATH)
-
-TOR_INSTANCES = [
-    {"port": 9050, "control_port": 9051, "torrc": "torrc"},
-    {"port": 9052, "control_port": 9053, "torrc": "torrc2"},
-    {"port": 9054, "control_port": 9055, "torrc": "torrc3"},
-]
-
-CONNECTIONS = [
-    {"proxy": None, "type": "own IP"},
-    {"proxy": {"http": "socks5h://127.0.0.1:9050", "https": "socks5h://127.0.0.1:9050"}, "type": "Tor (9050)"},
-    {"proxy": {"http": "socks5h://127.0.0.1:9052", "https": "socks5h://127.0.0.1:9052"}, "type": "Tor (9052)"},
-    {"proxy": {"http": "socks5h://127.0.0.1:9054", "https": "socks5h://127.0.0.1:9054"}, "type": "Tor (9054)"},
-]

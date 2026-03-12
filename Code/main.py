@@ -3,20 +3,16 @@ import os
 import sys
 import time
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-
+from ad_handler import handle_fullscreen_ads
 from apk_parser import parse_current_page_and_save_to_csv
-from config import CONNECTIONS, INPUT_CSV, MAX_VERIFICATION_ATTEMPTS
+from config import INPUT_CSV, MAX_VERIFICATION_ATTEMPTS
 from connect import (
     check_internet_connection,
     connect_to_existing_browser,
+    find_and_navigate_to_apk,
     kill_processes_by_name,
     start_chromium,
 )
-from ad_handler import handle_fullscreen_ads
-from tor_handler import renew_tor_ip, start_tor_instances, stop_tor
 from utils import (
     check_for_dmca_removal,
     clean_app_data,
@@ -26,7 +22,6 @@ from utils import (
     read_visited_links,
     save_visited_link,
 )
-from connect import find_and_navigate_to_apk
 
 
 def _parse_start_percentage(args):
@@ -40,30 +35,24 @@ def _parse_start_percentage(args):
         return value
     except ValueError:
         print("Invalid percentage. Provide an integer between 0 and 100.")
-        stop_tor()
         sys.exit(1)
 
 
 def main():
     """Orchestrate the APKMirror crawling loop."""
-    tor_index = 0
-
     ensure_directories_exist()
     visited_links = read_visited_links()
 
-    start_tor_instances()
     start_chromium()
     check_internet_connection()
 
     driver = connect_to_existing_browser()
     if not driver:
         print("Failed to connect to browser. Exiting.")
-        stop_tor()
         return
 
     if not os.path.exists(INPUT_CSV):
         print(f"Input file not found: {INPUT_CSV}")
-        stop_tor()
         return
 
     clean_app_data()
@@ -84,15 +73,11 @@ def main():
             print(f"Skipping {app_link} – already processed.")
             continue
 
-        tor_index = (tor_index + 1) % len(CONNECTIONS)
-        connection = CONNECTIONS[tor_index]
-        print(f"Using connection: {connection['type']}")
         print(f"Navigating to: {app_link}")
-
         driver.set_page_load_timeout(180)
         driver.get(app_link)
 
-        driver = handle_verification_and_rotate(driver, app_link, connection, visited_links)
+        driver = handle_verification_and_rotate(driver, app_link, visited_links)
         if not driver:
             driver = connect_to_existing_browser()
             continue
@@ -108,7 +93,7 @@ def main():
         handle_fullscreen_ads(driver)
         check_internet_connection()
 
-        driver = handle_verification_and_rotate(driver, app_link, connection, visited_links)
+        driver = handle_verification_and_rotate(driver, app_link, visited_links)
         if not driver:
             driver = connect_to_existing_browser()
             continue
@@ -121,7 +106,7 @@ def main():
             visited_links.add(app_link)
             continue
 
-        driver = handle_verification_and_rotate(driver, app_link, connection, visited_links)
+        driver = handle_verification_and_rotate(driver, app_link, visited_links)
         if not driver:
             driver = connect_to_existing_browser()
             continue
@@ -129,7 +114,7 @@ def main():
         parse_current_page_and_save_to_csv(driver, app_link)
         check_internet_connection()
 
-        driver = handle_verification_and_rotate(driver, app_link, connection, visited_links)
+        driver = handle_verification_and_rotate(driver, app_link, visited_links)
         if not driver:
             driver = connect_to_existing_browser()
             continue
@@ -143,7 +128,6 @@ def main():
         check_internet_connection()
 
     driver.quit()
-    stop_tor()
     print("Crawling completed.")
 
 
